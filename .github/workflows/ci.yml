@@ -31,3 +31,13 @@ jobs:
         run: npm test
       - name: Code quality analysis
         run: eslint .
+
+      - name: Send email notification
+        if: ${{ job.status == 'success' }}
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server: smtp.gmail.com
+          from: h4z3y.bc+gha@gmail.com
+          to: h4z3y.bc@gmail.com
+          subject: Build Successful!
+          body: Your build has completed successfully.
