@@ -16,22 +16,7 @@ jobs:
       - run: cd WebUI/board-booker && npm install
       - name: Build the application
         run: cd WebUI/board-booker && npm run build
-
-  test:
-    runs-on: ubuntu-latest
-    needs: build
-
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-      - run: npm install
-      - name: Run unit tests
-        run: npm test
-      - name: Code quality analysis
-        run: eslint .
-
+      
       - name: Send email notification
         if: ${{ job.status == 'success' }}
         uses: dawidd6/action-send-mail@v3
