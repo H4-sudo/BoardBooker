@@ -15,7 +15,7 @@ jobs:
           node-version: '18'
       - run: cd WebUI/board-booker && npm install
       - name: Build the application
-        run: npm run build
+        run: cd WebUI/board-booker && npm run build
 
   test:
     runs-on: ubuntu-latest
