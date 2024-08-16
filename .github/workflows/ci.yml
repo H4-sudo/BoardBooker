@@ -10,44 +10,61 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+      
       - uses: actions/setup-node@v3
         with:
           node-version: '22'
           cache: 'npm'
-      - run: cd WebUI/board-booker/ && npm install
+
+      - name: Navigate to project directory
+        working-directory: WebUI/board-booker/
+        run: npm install
+
       - name: Build the application
-        run: cd WebUI/board-booker/ && npm run build
+        working-directory: WebUI/board-booker/
+        run: npm run build
+
       - name: Run unit tests
-        run: cd WebUI/board-booker/ && npm test
+        working-directory: WebUI/board-booker/
+        run: npm test
+
       - name: Lint code
-        run: cd WebUI/board-booker/ && npm run lint
+        working-directory: WebUI/board-booker/
+        run: npm run lint
 
   deploy:
     runs-on: ubuntu-latest
     needs: build-and-test
+
     steps:
       - uses: actions/checkout@v3
+
       - uses: actions/setup-node@v3
         with:
           node-version: '22'
-      - run: cd WebUI/board-booker/ && npm install
+
+      - name: Install dependencies
+        working-directory: WebUI/board-booker/
+        run: npm install
+
       - name: Deploy to GitHub Pages
-        uses: actions/deploy@v1
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          github-token: ${{ secrets.GH_TOKEN }}
-          artifact-name: build
-          strategy: "single"
-          provider: pages
-          folder: build
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: WebUI/board-booker/build
 
   notify:
     runs-on: ubuntu-latest
     needs: build-and-test
+
     steps:
       - uses: dawidd6/action-send-mail@v3
         with:
-          server: ${{ secrets.SMTP_SERVER }}
-          from: ${{ secrets.EMAIL_FROM }}
-          to: ${{ secrets.EMAIL_TO }}
+          server_address: ${{ secrets.SMTP_SERVER }}
+          server_port: ${{ secrets.SMTP_PORT }}
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
           subject: Build ${{ job.status }}!
           body: Your build has ${{ job.status }}. Check the workflow run for more details.
+          to: ${{ secrets.EMAIL_TO }}
+          from: ${{ secrets.EMAIL_FROM }}
